@@ -20,11 +20,6 @@ router.use((req, res, next) => {
     next();
 });
 
-router.use((req, res, next) => {
-    console.log("sauces request has been asked XX");
-    next()
-});
-
 // Send the array of the saucess
 router.get("/" , jsonParser, auth, sauceCTRL.getAllSauce);
 

@@ -16,10 +16,6 @@ router.use((req, res, next) => {
 
 router.use(cors());
 
-router.use((req, res, next) => {
-    console.log("user request has been asked XX");
-    next()
-});
 router.post('/signup', jsonParser, userCtrl.signup);
 router.post('/login', jsonParser, userCtrl.login);
 

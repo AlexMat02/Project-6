@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const user = require('../models/user');
 
 exports.signup = (req, res, next) => {
-    console.log("signup Requested");
     bcrypt.hash(req.body.password, 10).then(
         (hash) => {
             const user = new User({
@@ -13,7 +12,6 @@ exports.signup = (req, res, next) => {
             });
             user.save().then(
                 () => {
-                    console.log("signup before res");
                     res.status(201).json({
                         message: 'user added'
                     })
@@ -30,7 +28,6 @@ exports.signup = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
-    console.log("login requested");
     User.findOne({ email: req.body.email}).then(
         (user) => {
             if (!user) {
@@ -46,7 +43,6 @@ exports.login = (req, res, next) => {
                         });
                     }
                     const token = jwt.sign({userId: user._id}, 'RANDOM_TOKEN_SECRET', {expiresIn: '24h'});
-                    console.log("login before res");
                     res.status(200).json({
                         userId: user._id,
                         token: token

@@ -2,9 +2,6 @@ const Sauce = require("../models/sauces");
 const fs = require("fs");
 
 exports.createSauce = (req, res, next) => {
-    console.log("createSauce requested");
-    console.log("LOGGED req.body.sauce -> " , JSON.parse(req.body.sauce));
-    console.log("LOGGED typeof(req.body.sauce) -> " , typeof(req.body.sauce));
     const url = req.protocol + '://' + req.get('host');
     req.body.sauce = JSON.parse(req.body.sauce);
     const sauce = new Sauce({
@@ -23,7 +20,6 @@ exports.createSauce = (req, res, next) => {
     console.log(sauce);
     sauce.save().then(
         () => {
-            console.log("createSauce before res");
             res.status(201).json({
                 message: 'Saved successfully'
             })
@@ -37,12 +33,10 @@ exports.createSauce = (req, res, next) => {
 }; 
 
 exports.getOneSauce = (req, res, next) => {
-    console.log("getOneSauce requested");
     Sauce.findOne({
         _id: req.params.id
     }).then(
         (sauce) => {
-            console.log("getOneSauce before res");
             res.status(200).json(sauce);
         }
     ).catch(
@@ -53,10 +47,10 @@ exports.getOneSauce = (req, res, next) => {
 };
 
 exports.modifySauce = (req, res, next) => {
-    console.log("modifySauce requested");
     let sauce = new Sauce ({_id: req.params._id});
-    const url = req.protocol + '://' + req.get('host');
     if (req.file) {
+        const url = req.protocol + '://' + req.get('host');
+        req.body.sauce = JSON.parse(req.body.sauce);
         sauce = {
             userId: req.body.userId,
             name: req.body.name,
@@ -79,7 +73,6 @@ exports.modifySauce = (req, res, next) => {
     };
     Sauce.updateOne({_id: req.params.id}, sauce).then(
     () => {
-        console.log("modifySauce before res");
         res.status(201).json({
             message: 'Updated'
         });
@@ -94,14 +87,12 @@ exports.modifySauce = (req, res, next) => {
 };
 
 exports.deleteSauce = (req, res, next) => {
-    console.log("deleteSauce requested");
     Sauce.findOne({_id: req.params.id}).then(
         (sauce) => {
             const filename = sauce.imageUrl.split("/images/")[1];
             fs.unlink("images/" + filename, () => {
                 Sauce.deleteOne({_id: req.params.id}).then(
                     () => {
-                        console.log("deleteSauce before res");
                         res.status(200).json({
                             message: 'Successfully Deleted'
                         });
@@ -119,10 +110,8 @@ exports.deleteSauce = (req, res, next) => {
 };
 
 exports.getAllSauce = (req, res, next) => {
-    console.log("getAllSauce requested");
     Sauce.find().then(
         (sauces) => {
-            console.log("getAllSauce before res");
             res.status(200).json(sauces)
         }
     )
@@ -134,7 +123,6 @@ exports.getAllSauce = (req, res, next) => {
 };
 
 exports.likedSauce = (req, res) => {
-    console.log("likedSauce requested");
     Sauce.findOne({ _id: req.params.id}).then(
         (sauce) => {
             if (req.body.like === 1) {
@@ -155,7 +143,6 @@ exports.likedSauce = (req, res) => {
                 })
                 Sauce.updateOne({_id: req.params.id}, ssauce).then(
                     () => {
-                        console.log("Logged sauce READ-1-1 : " , ssauce);
                         res.status(200).json({
                             message: "Sauce Liked"
                         });
@@ -179,7 +166,6 @@ exports.likedSauce = (req, res) => {
                             usersLiked: sauce.usersLiked,
                             usersDisliked: sauce.usersDisliked 
                         })
-                        console.log("Logged ssauce after remove : " , ssauce);
                         Sauce.updateOne({_id: req.params.id}, ssauce).then(
                             () => {
                                 res.status(200).json({
@@ -217,7 +203,6 @@ exports.likedSauce = (req, res) => {
                 }
             } else if (req.body.like === -1) {
                 sauce.usersDisliked.push(req.body.userId);
-                console.log("Logged sauce.usersDisliked : " ,sauce.usersDisliked)
                 const ssauce = new Sauce({
                     _id: sauce._id,
                     userId: sauce.userId,
@@ -232,7 +217,6 @@ exports.likedSauce = (req, res) => {
                     usersLiked: sauce.usersLiked,
                     usersDisliked: sauce.usersDisliked 
                 })
-                console.log("Logged ssauce after adding DISLIKE : " , ssauce);
                 Sauce.updateOne({_id: req.params.id}, ssauce).then(
                     () => {
                         res.status(200).json({
