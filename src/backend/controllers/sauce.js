@@ -17,7 +17,6 @@ exports.createSauce = (req, res, next) => {
         usersLiked: [],
         usersDisliked: [],
     });
-    console.log(sauce);
     sauce.save().then(
         () => {
             res.status(201).json({
